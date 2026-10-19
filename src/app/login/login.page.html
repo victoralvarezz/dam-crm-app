@@ -1,0 +1,61 @@
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Iniciar sesión - CRM</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <h2>Acceso a Gestión de Clientes</h2>
+
+  <p>Introduce tu correo y contraseña de Supabase.</p>
+
+  <form
+    [formGroup]="loginForm"
+    (ngSubmit)="iniciarSesion()">
+
+    <ion-item>
+      <ion-input
+        label="Correo electrónico"
+        labelPlacement="floating"
+        type="email"
+        formControlName="email"
+        errorText="Introduce un correo válido">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Contraseña"
+        labelPlacement="floating"
+        type="password"
+        formControlName="password"
+        errorText="La contraseña es obligatoria">
+      </ion-input>
+    </ion-item>
+
+    @if (errorMensaje()) {
+      <p style="color: red;">
+        {{ errorMensaje() }}
+      </p>
+    }
+
+    <div class="ion-padding-top">
+      <ion-button
+        expand="block"
+        type="submit"
+        [disabled]="loginForm.invalid || cargando()">
+
+        @if (cargando()) {
+          Accediendo...
+        } @else {
+          Iniciar sesión
+        }
+
+      </ion-button>
+    </div>
+
+  </form>
+
+</ion-content>
