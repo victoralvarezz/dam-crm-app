@@ -1,20 +1,143 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>DAM CRM - Gestión de Clientes</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  @if (usuario()) {
+
+    <ion-card>
+      <ion-card-content>
+        <p>Usuario: {{ usuario()?.email }}</p>
+        <p>Rol: {{ rol() || 'Comprobando...' }}</p>
+
+        <ion-button
+          color="medium"
+          (click)="cerrarSesion()">
+          Cerrar sesión
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Formulario visible solo para administradores -->
+    @if (rol() === 'admin') {
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            {{ editandoId ? 'Editar cliente' : 'Nuevo cliente' }}
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <form
+            [formGroup]="clientForm"
+            (ngSubmit)="guardarCliente()">
+
+            <ion-item>
+              <ion-input
+                label="Nombre"
+                labelPlacement="floating"
+                formControlName="nombre"
+                errorText="Mínimo 3 caracteres">
+              </ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                label="Empresa"
+                labelPlacement="floating"
+                formControlName="empresa"
+                errorText="La empresa es obligatoria">
+              </ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                label="Correo electrónico"
+                labelPlacement="floating"
+                type="email"
+                formControlName="email"
+                errorText="Introduce un correo válido">
+              </ion-input>
+            </ion-item>
+
+            <div class="ion-padding-top">
+              <ion-button
+                type="submit"
+                expand="block"
+                [disabled]="clientForm.invalid">
+                {{ editandoId ? 'Actualizar' : 'Guardar cliente' }}
+              </ion-button>
+
+              @if (editandoId) {
+                <ion-button
+                  type="button"
+                  color="medium"
+                  fill="outline"
+                  expand="block"
+                  (click)="cancelarEdicion()">
+                  Cancelar edición
+                </ion-button>
+              }
+            </div>
+
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+    } @else {
+      <p>Solo los administradores pueden modificar clientes.</p>
+    }
+
+    @if (mensaje) {
+      <p>{{ mensaje }}</p>
+    }
+
+    <h2>Listado de clientes</h2>
+
+    <ion-list>
+      @for (cliente of clientes; track cliente.id) {
+
+        <ion-item>
+          <ion-label>
+            <h2>{{ cliente.nombre }}</h2>
+            <p>{{ cliente.empresa }}</p>
+            <p>{{ cliente.email }}</p>
+          </ion-label>
+
+          @if (rol() === 'admin') {
+            <ion-button
+              slot="end"
+              (click)="editarCliente(cliente)">
+              Editar
+            </ion-button>
+
+            <ion-button
+              slot="end"
+              color="danger"
+              (click)="eliminarCliente(cliente)">
+              Eliminar
+            </ion-button>
+          }
+        </ion-item>
+
+      } @empty {
+        <ion-item>
+          <ion-label>
+            No hay clientes registrados.
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+
+  } @else {
+    <p>Comprobando sesión...</p>
+  }
+
 </ion-content>
+
